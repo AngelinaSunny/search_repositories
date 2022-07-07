@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Поиск репозиториев GitHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Flex:opsz,wght@8..144,100;8..144,400;8..144,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body class="body">
+  <div class="body__app app">
+    <input type="text" class="app__input input" placeholder="Поиск">
+    <ul class="input__hint-list hint-list">
+      <li class="hint-list__item"></li>
+      <li class="hint-list__item"></li>
+      <li class="hint-list__item "></li>
+      <li class="hint-list__item"></li>
+      <li class="hint-list__item"></li>
+    </ul>
+
+    <ul class="input__repo-list repo-list">
+
+      <template id="repo">
+        <li class="repo-list__item">
+          <div class="repo-list__text-wrapper">
+            <span class="repo-list__text">Name:
+              <span class="repo-list__text-name"></span>
+            </span>
+            <span class="repo-list__text">Owner:
+              <span class="repo-list__text-owner"></span>
+            </span>
+            <span class="repo-list__text">Stars:
+              <span class="repo-list__text-stars"></span>
+            </span>
+          </div>
+          <button class="repo-list__item-close">
+            <img src="Group 1.png" alt="кнопка закрыть" class="repo-list__img-close">
+          </button>
+        </li>
+      </template>
+
+    </ul>
+
+  </div>
+
+
+  <script src="js/index.js"></script>
+</body>
+
+</html>
