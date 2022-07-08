@@ -50,38 +50,41 @@ function clearSearch() {
   hintListItems.forEach(item => {
     item.remove();
   });
-  input.value = "";
 }
 
 ///получаем данные сервера и обрабатываем их///
 async function getRepositories(value) {
   try {
-    return await fetch(`${URL}?q=${value}`)
+    return await fetch(`${URL}?q=${value}&per_page=5`)
       .then(response => response.json())
       .then(reposit => {
-        let count = 0;
-        ///проверяем, есть ли найденный репозиторий в списке добавленных и формируем подсказки//
-        reposit.items.forEach((item) => {
-          count++;
-          if (!checkArr.includes(item.name) & count <= 5) {
-            const hintElem = document.createElement('li');
-            hintElem.classList.add('hint-list__item');
-            hintList.appendChild(hintElem);
-            hintElem.textContent = item.name;
 
-            ////слушаем клики для добавления репозитория из подсказок///
-            hintElem.addEventListener('click', () => {
-              if (!checkArr.includes(item.name)) {
-                creatCardRepo(item);
-                checkArr.push(item.name);
-                console.log(checkArr);
-                clearSearch();
-              }
-            });
-          }
-        })
+        //// формируем подсказки ////
+        function createSearch() {
+          reposit.items.forEach((item) => {
+            if (hintList.childNodes.length < 6) {
+              const hintElem = document.createElement('li');
+              hintElem.classList.add('hint-list__item');
+              hintList.appendChild(hintElem);
+              hintElem.textContent = item.name;
+
+              ////слушаем клики для добавления репозитория из подсказок///
+              hintElem.addEventListener('click', () => {
+                if (!checkArr.includes(item.name)) {
+                  creatCardRepo(item);
+                  checkArr.push(item.name);
+                  input.value = "";
+                  clearSearch();
+                }
+              });
+            } else {
+              clearSearch();
+              createSearch();
+            }
+          })
+        }
+        createSearch();
       });
-
   } catch (err) {
     throw new Error(err);
   }
