@@ -1,10 +1,8 @@
 const appWrapper = document.querySelector('.app');
 const input = document.querySelector('.input');
 const hintList = document.querySelector('.hint-list');
-const hintListItem = document.querySelectorAll('.hint-list__item');
-const hintListItemActive = 'hint-list__item--active';
+
 const URL = 'https://api.github.com/search/repositories';
-const REPOSIT_PER_SEARCH = 5;
 
 const repositList = document.querySelector('.repo-list');
 const repoTemplate = document.querySelector('#repo').content;
@@ -12,7 +10,6 @@ const btnClose = document.querySelector('.repo-list__item-close');
 
 let valueInput;
 let checkArr = [];
-
 
 ////Создаем карточку репозитория/////
 function creatCardRepo(item) {
@@ -47,6 +44,49 @@ function onChange() {
 
 input.addEventListener('keyup', onChange);
 
+///очищаем инпут и убираем подсказки///
+function clearSearch() {
+  let hintListItems = document.querySelectorAll('.hint-list__item');
+  hintListItems.forEach(item => {
+    item.remove();
+  });
+  input.value = "";
+}
+
+///получаем данные сервера и обрабатываем их///
+async function getRepositories(value) {
+  try {
+    return await fetch(`${URL}?q=${value}`)
+      .then(response => response.json())
+      .then(reposit => {
+        let count = 0;
+        ///проверяем, есть ли найденный репозиторий в списке добавленных и формируем подсказки//
+        reposit.items.forEach((item) => {
+          count++;
+          if (!checkArr.includes(item.name) & count <= 5) {
+            const hintElem = document.createElement('li');
+            hintElem.classList.add('hint-list__item');
+            hintList.appendChild(hintElem);
+            hintElem.textContent = item.name;
+
+            ////слушаем клики для добавления репозитория из подсказок///
+            hintElem.addEventListener('click', () => {
+              if (!checkArr.includes(item.name)) {
+                creatCardRepo(item);
+                checkArr.push(item.name);
+                console.log(checkArr);
+                clearSearch();
+              }
+            });
+          }
+        })
+      });
+
+  } catch (err) {
+    throw new Error(err);
+  }
+}
+
 //регулируем количество отправляемых запросов, создаем задержку
 const debounce = (fn, ms) => {
   let timeout;
@@ -56,43 +96,6 @@ const debounce = (fn, ms) => {
 
     timeout = setTimeout(fnCall, ms);
   };
-}
-
-///очищаем инпут и убираем подсказки///
-function clearSearch() {
-  hintListItem.forEach(item => {
-    item.classList.remove(hintListItemActive);
-    input.value = "";
-  });
-}
-
-///получаем данные сервера и обрабатываем их///
-async function getRepositories(value) {
-  try {
-    return await fetch(`${URL}?q=${value}&per_page = ${REPOSIT_PER_SEARCH}`)
-      .then(response => response.json())
-      .then(reposit => {
-
-        ///проверяем, есть ли найденный репозиторий в списке добавленных и формируем подсказки//
-        reposit.items.forEach((item, i) => {
-          if (!checkArr.includes(item.name)) {
-            hintListItem[i].textContent = item.name;
-            hintListItem[i].classList.add(hintListItemActive);
-          }
-          ////слушаем клики для добавления репозитория из подсказок///
-          hintListItem[i].addEventListener('click', () => {
-            if (!checkArr.includes(item.name)) {
-              creatCardRepo(item);
-              checkArr.push(item.name);
-              clearSearch();
-            }
-          });
-        })
-      });
-
-  } catch (err) {
-    throw new Error(err);
-  }
 }
 
 getRepositories = debounce(getRepositories, 500);
